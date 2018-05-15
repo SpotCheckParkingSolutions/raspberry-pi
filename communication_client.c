@@ -17,19 +17,19 @@ int main (int argc, char** argv) {
   struct sockaddr_in serverAddress;
   // set server address and port
   int port = atoi(argv[1]);
-  memset((char*))&serverAddress, '\0', sizeof(serverAddress);
+  memset((char*)&serverAddress, '\0', sizeof(serverAddress));
   serverAddress.sin_family = AF_INET;
-	serverAddress.sin_port = htons(portNumber);
-	serverHostInfo = gethostbyname(argv[1]);
-  memcpy((char*)&serverAddress.sin_addr.s_addr, (char*)serverHostInfo->h_addr, serverHostInfo->h_length);
+	serverAddress.sin_port = htons(port);
+	hostInfo = gethostbyname("localhost");
+  memcpy((char*)&serverAddress.sin_addr.s_addr, (char*)hostInfo->h_addr, hostInfo->h_length);
   // set up the socket
-	int listenSocketFD = socket(AF_INET, SOCK_STREAM, 0);
-	if (listenSocketFD < 0) error("SERVER: error opening socket");
+	int socketFD = socket(AF_INET, SOCK_STREAM, 0);
+	if (socketFD < 0) reportError("SERVER: error opening socket");
   // attempt to connect
-  if (connect(socketFD, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0);
-    error("CLIENT: error connecting");
+  if (connect(socketFD, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0)
+    reportError("CLIENT: error connecting");
   else {
-    printf("CLIENT: connected to server");
+    printf("CLIENT: connected to server\n");
     close(socketFD);
   }
   return 0;
