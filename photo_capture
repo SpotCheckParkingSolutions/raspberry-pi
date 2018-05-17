@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Date in format: ddmmyyyy_hhmmss
+stamp=$(date +"%d%m%Y_%H%M%S")
+
+# Specify resolution
+xRes=1280
+yRes=720
+
+# Capture photo (need fswebcam installed for this)
+fswebcam -r $xRes"x"$yRes --no-banner /photo_dir/$stamp.png
