@@ -12,6 +12,26 @@ void reportError(char* errorMsg) {
 }
 
 int main(int argc, char** argv) {
+  // specify server_properties filepath
+  const char* path = "./server_properties.json";
+  // read contents of server_properties into buffer
+  char* buffer = 0;
+  long length;
+  FILE* server_properties = fopen (path, "rb");
+  if (server_properties) {
+    fseek (server_properties, 0, SEEK_END);
+    length = ftell (server_properties);
+    fseek (server_properties, 0, SEEK_SET);
+    buffer = malloc (length);
+    if (buffer) {
+      fread (buffer, 1, length, server_properties);
+    }
+    fclose (server_properties);
+  }
+  // check for error parsing
+  if (!buffer) {
+    reportError("SERVER: error parsing server_properties");
+  }
   struct sockaddr_in serverAddress, clientAddress;
   // set server address and port
   int port = atoi(argv[1]);
@@ -32,8 +52,15 @@ int main(int argc, char** argv) {
 	int establishedConnectionFD = accept(listenSocketFD, (struct sockaddr *)&clientAddress, &sizeOfClientInfo);
 	if (establishedConnectionFD < 0) reportError("SERVER: error connecting to client");
   printf("SERVER: connected to client\n");
+  // transmit server_properties to client
+  int charsWritten = send(establishedConnectionFD, buffer, strlen(buffer), 0);
+	if (charsWritten < 0)
+    reportError("SERVER: error transmitting server_properties");
+	if (charsWritten < strlen(buffer))
+    printf("SERVER ==warning==: server_properties transmissison incomplete\n");
   // close connection
   close(establishedConnectionFD);
   close(listenSocketFD);
+  free(buffer);
   return 0;
 }
