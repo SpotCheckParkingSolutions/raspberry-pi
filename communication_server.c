@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
   // block until a connection is established
 	socklen_t sizeOfClientInfo = sizeof(clientAddress);
 	int establishedConnectionFD = accept(listenSocketFD, (struct sockaddr *)&clientAddress, &sizeOfClientInfo);
-	if (establishedConnectionFD < 0) reportError("SERVER: error connecting to server");
+	if (establishedConnectionFD < 0) reportError("SERVER: error connecting to client");
   printf("SERVER: connected to client\n");
   // close connection
   close(establishedConnectionFD);
